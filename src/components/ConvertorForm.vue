@@ -44,6 +44,13 @@
           <p>{{ arabText }}</p>
         </div>
       </div>
+      <!-- Arab Section -->
+      <div class="result-card">
+        <h3>Fonema</h3>
+        <div class="result-content">
+          <p>{{ fonemaText }}</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -149,6 +156,13 @@ textarea {
 </style>
 
 <script>
+const ipa_list = [
+  "ɑ", "ɒ", "b", "d͡ʒ", "t͡ʃ", "d", "e", "æ", "f", "ɡ",
+  "ɰ", "h", "χ", "ɯ", "i", "ʒ", "k", "q", "l", "m",
+  "n", "ŋ", "o", "ø", "p", "r", "s", "ʃ", "t", "u",
+  "ʊ", "ʏ", "v", "j", "z"
+];
+
 const turk_harf_list = [
   ["A", "a"], ["Ä", "ä"], ["B", "b"], ["C", "c"], ["Ç", "ç"],
   ["D", "d"], ["E", "e"], ["Ә", "ә"], ["F", "f"], ["G", "g"],
@@ -190,6 +204,15 @@ function createHarfMap(fromList, toList) {
   return map;
 }
 
+function createHarfMapIpa(fromList, toList) {
+  const map = {};
+  for (let i = 0; i < fromList.length; i++) {
+    map[fromList[i][0]] = toList[i]; // Katta yoki kichik farqi yo'q, faqat IPA belgilarini qo'yamiz
+    map[fromList[i][1]] = toList[i]; // Katta yoki kichik farqi yo'q, faqat IPA belgilarini qo'yamiz
+  }
+  return map;
+}
+
 // Turkchadan kirillga konvertatsiya qilish
 const turk_to_kiril = createHarfMap(turk_harf_list, kiril_harf_list);
 // Turkchadan arabchaga konvertatsiya qilish
@@ -202,6 +225,11 @@ const kiril_to_arab = createHarfMap(kiril_harf_list, arab_harf_list);
 const arab_to_kiril = createHarfMap(arab_harf_list, kiril_harf_list);
 const arab_to_turk = createHarfMap(arab_harf_list, turk_harf_list);
 
+const turk_to_fonema = createHarfMapIpa(turk_harf_list, ipa_list);
+const kiril_to_fonema = createHarfMapIpa(kiril_harf_list, ipa_list);
+const arab_to_fonema = createHarfMapIpa(arab_harf_list, ipa_list);
+
+
 export default {
   data() {
     return {
@@ -210,6 +238,7 @@ export default {
       krilText: '',
       urtaBitikText: '',
       arabText: '',
+      fonemaText: '',
     };
   },
   methods: {
@@ -228,14 +257,19 @@ export default {
         this.krilText = convertText(this.mainText, turk_to_kiril);
         this.urtaBitikText = this.mainText;
         this.arabText = convertText(this.mainText, turk_to_arab);
+        this.fonemaText = convertText(this.mainText, turk_to_fonema);
       } else if (this.selectedLanguage === 'kril') {
         this.krilText = this.mainText;
         this.urtaBitikText = convertText(this.mainText, kiril_to_turk);
         this.arabText = convertText(this.mainText, kiril_to_arab);
+        this.fonemaText = convertText(this.mainText, kiril_to_fonema);
+
       } else if (this.selectedLanguage === 'arab') {
         this.krilText = convertText(this.mainText, arab_to_kiril);
         this.urtaBitikText = convertText(this.mainText, arab_to_turk);
         this.arabText = this.mainText;
+        this.fonemaText = convertText(this.mainText, arab_to_fonema);
+
       }
     },
   },
