@@ -1,11 +1,18 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import Convertor from '@/pages/Convertor.vue'
+import {createRouter, createWebHistory} from 'vue-router'
+import Payment from "@/pages/Payment.vue";
+import Transaction from "@/pages/Transaction.vue";
 
 const routes = [
+
     {
-        path: '/',
-        name: 'Base',
-        component: Convertor,
+        path: '/pay',
+        name: 'Pay',
+        component: Payment,
+    },
+    {
+        path: '/transactions',
+        name: 'Transaction',
+        component: Transaction,
     },
 ]
 

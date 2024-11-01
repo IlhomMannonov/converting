@@ -2,11 +2,13 @@
   <div class="container">
     <!-- Language selection at the top -->
     <div class="select-language">
-      <label for="language-select">Tilni tanlang:</label>
+      <label for="language-select">Yozuv turini tanlang:</label>
       <select id="language-select" v-model="selectedLanguage">
-        <option value="turk">Örta bitik</option>
-        <option value="kril">Kiril</option>
-        <option value="arab">Arab</option>
+        <option value="turk">Örtabitik Lotin</option>
+        <option value="kril">Örtabitik Kiril</option>
+        <option value="arab">Örtabitik Arab</option>
+        <option value="fonema">Örtabitik Fonemalar</option>
+        <option value="urxun">Urxun-Enasoy</option>
       </select>
     </div>
 
@@ -14,48 +16,71 @@
     <div class="input-group large-input">
       <div class="input-card">
         <textarea style="background: #ffffff" id="main-text" v-model="mainText"
-                  placeholder="Enter your text here..."></textarea>
+                  placeholder="Bu yerga yozing" class="custom-text"></textarea>
       </div>
-      <button @click="translateText" class="translate-btn">Translate</button>
+      <button @click="translateText" class="translate-btn">Ötkazish</button>
     </div>
 
     <!-- Translation results sections with card-like design -->
     <div class="conversion-results">
       <!-- Kril Section -->
       <div class="result-card">
-        <h3>Kril</h3>
+        <h3> Örtabitik Krill</h3>
+
+
+
         <div class="result-content">
-          <p>{{ krilText }}</p>
+          <p class="custom-text">{{ krilText }}</p>
         </div>
       </div>
 
       <!-- O'tra Bitik Section -->
       <div class="result-card">
-        <h3>Ötra bitik</h3>
+        <h3>Örtabitik Lotin</h3>
         <div class="result-content">
-          <p>{{ urtaBitikText }}</p>
+          <p class="custom-text">{{ urtaBitikText }}</p>
         </div>
       </div>
 
       <!-- Arab Section -->
       <div class="result-card">
-        <h3>Arab</h3>
-        <div class="result-content">
-          <p>{{ arabText }}</p>
+        <h3>Örtabitik Arab</h3>
+        <div class="result-content rtl-text">
+          <p class="custom-text">{{ arabText }}</p>
         </div>
       </div>
       <!-- Arab Section -->
       <div class="result-card">
-        <h3>Fonema</h3>
+        <h3>Örtabitik Fonemalar</h3>
         <div class="result-content">
-          <p>{{ fonemaText }}</p>
+          <p class="custom-text">{{ fonemaText }}</p>
+        </div>
+      </div>  <!-- Arab Section -->
+      <div class="result-card">
+        <h3>Örtabitik Orxon-Enasoy</h3>
+        <div class="result-content rtl-text">
+          <p class="custom-text">{{ urxunText }}</p>
         </div>
       </div>
     </div>
   </div>
 </template>
 
+
 <style>
+@font-face {
+  font-family: 'old-turk';
+  src: url('/src/old-turk.ttf') format('truetype');
+}
+.custom-text {
+  font-family: 'old-turk', sans-serif;
+}
+
+.rtl-text {
+  direction: rtl; /* Matnni o'ngdan chapga yo'naltiradi */
+  text-align: right; /* Matnni o'ngga hizalaydi */
+}
+
 .container {
   max-width: 600px;
   margin: 0 auto;
@@ -172,7 +197,15 @@ const turk_harf_list = [
   ["R", "r"], ["S", "s"], ["Ş", "ş"], ["T", "t"], ["U", "u"],
   ["Ū", "ū"], ["Ü", "ü"], ["V", "v"], ["Y", "y"], ["Z", "z"]
 ];
-
+const urxun_harf_list = [
+  ["𐰀", "𐰀"], ["𐱉", "𐱉"], ["𐰌", "𐰌"], ["𐰪", "𐰪"], ["𐰲", "𐰲"],
+  ["𐰓", "𐰓"], ["E", "E"], ["𐱊", "𐱊"], ["𐱋", "𐱋"], ["𐰏", "𐰏"],
+  ["𐰍", "𐰍"], ["𐱌", "𐱌"], ["𐰜", "𐰜"], ["𐱍", "𐱍"], ["𐰃", "𐰃"],
+  ["𐱈", "𐱈"], ["𐰛", "𐰛"], ["𐰴", "𐰴"], ["𐰠", "𐰠"], ["𐰢", "𐰢"],
+  ["𐰣", "𐰣"], ["𐰭", "𐰭"], ["𐰆", "𐰆"], ["𐱎", "𐱎"], ["𐰯", "𐰯"],
+  ["𐰼", "𐰼"], ["𐰾", "𐰾"], ["𐱁", "𐱁"], ["𐱅", "𐱅"], ["𐰵", "𐰵"],
+  ["𐱏", "𐱏"], ["𐱐", "𐱐"], ["𐱑", "𐱑"], ["𐰘", "𐰘"], ["𐰔", "𐰔"]
+];
 
 const arab_harf_list = [
   ["ا", "ا"], ["آ", "آ"], ["ب", "ب"], ["ج", "ج"], ["چ", "چ"],
@@ -194,6 +227,7 @@ const kiril_harf_list = [
   ["Ұ", "ұ"], ["Ү", "ү"], ["В", "в"], ["Й", "й"], ["З", "з"]
 ];
 
+
 // Harflar ro'yxatlarini xaritaga aylantirish
 function createHarfMap(fromList, toList) {
   const map = {};
@@ -209,6 +243,15 @@ function createHarfMapIpa(fromList, toList) {
   for (let i = 0; i < fromList.length; i++) {
     map[fromList[i][0]] = toList[i]; // Katta yoki kichik farqi yo'q, faqat IPA belgilarini qo'yamiz
     map[fromList[i][1]] = toList[i]; // Katta yoki kichik farqi yo'q, faqat IPA belgilarini qo'yamiz
+  }
+  return map;
+}
+
+function createIpaToTurkMap(ipaList, turkList) {
+  const map = {};
+  for (let i = 0; i < ipaList.length; i++) {
+    map[ipaList[i]] = turkList[i][0]; // IPA belgisi uchun katta harf
+    map[ipaList[i]] = turkList[i][1]; // IPA belgisi uchun kichik harf
   }
   return map;
 }
@@ -229,6 +272,20 @@ const turk_to_fonema = createHarfMapIpa(turk_harf_list, ipa_list);
 const kiril_to_fonema = createHarfMapIpa(kiril_harf_list, ipa_list);
 const arab_to_fonema = createHarfMapIpa(arab_harf_list, ipa_list);
 
+const fonema_to_turk = createIpaToTurkMap(ipa_list, turk_harf_list);
+const fonema_to_kril = createIpaToTurkMap(ipa_list, kiril_harf_list);
+const fonema_to_arab = createIpaToTurkMap(ipa_list, arab_harf_list);
+
+const turk_to_urxun = createHarfMap(turk_harf_list, urxun_harf_list);
+const kril_to_urxun = createHarfMap(kiril_harf_list, urxun_harf_list);
+const arab_to_urxun = createHarfMap(arab_harf_list, urxun_harf_list);
+const fonema_to_urxun = createIpaToTurkMap(ipa_list, urxun_harf_list);
+
+const urxun_to_turk = createHarfMap(urxun_harf_list, turk_harf_list);
+const urxun_to_kril = createHarfMap(urxun_harf_list,kiril_harf_list);
+const urxun_to_arab = createHarfMap(urxun_harf_list,arab_harf_list);
+const urxun_to_fonema = createIpaToTurkMap(urxun_harf_list, ipa_list);
+
 
 export default {
   data() {
@@ -239,6 +296,7 @@ export default {
       urtaBitikText: '',
       arabText: '',
       fonemaText: '',
+      urxunText: '',
     };
   },
   methods: {
@@ -251,6 +309,35 @@ export default {
         return result;
       }
 
+      function convertArabToTurk(text, map) {
+        let result = '';
+        let i = 0;
+
+        while (i < text.length) {
+          let found = false;
+
+          // Ko'p belgili harflarni tekshiramiz
+          for (let j = 0; j < arab_harf_list.length; j++) {
+            let arabHarf = arab_harf_list[j][0]; // Arabcha harf
+
+            // Matndagi harflarni substring orqali ko'p belgili bo'lsa tanib olish
+            if (text.substring(i, i + arabHarf.length) === arabHarf) {
+              result += map[arabHarf]; // Xaritada mosini qo'shamiz
+              i += arabHarf.length; // Kichik bo'lsa 1, katta harf bo'lsa 2 belgi o'zgartiriladi
+              found = true;
+              break;
+            }
+          }
+
+          // Agar mos kelmasa, asl belgini qo'shamiz
+          if (!found) {
+            result += text[i];
+            i++;
+          }
+        }
+
+        return result;
+      }
 
       // Translation logic here
       if (this.selectedLanguage === 'turk') {
@@ -258,53 +345,40 @@ export default {
         this.urtaBitikText = this.mainText;
         this.arabText = convertText(this.mainText, turk_to_arab);
         this.fonemaText = convertText(this.mainText, turk_to_fonema);
+        this.urxunText = convertText(this.mainText, turk_to_urxun);
       } else if (this.selectedLanguage === 'kril') {
         this.krilText = this.mainText;
         this.urtaBitikText = convertText(this.mainText, kiril_to_turk);
         this.arabText = convertText(this.mainText, kiril_to_arab);
         this.fonemaText = convertText(this.mainText, kiril_to_fonema);
+        this.urxunText = convertText(this.mainText, kril_to_urxun);
 
       } else if (this.selectedLanguage === 'arab') {
-        this.krilText = convertText(this.mainText, arab_to_kiril);
-        this.urtaBitikText = convertText(this.mainText, arab_to_turk);
+        this.krilText = convertArabToTurk(this.mainText, arab_to_kiril);
+        this.urtaBitikText = convertArabToTurk(this.mainText, arab_to_turk);
         this.arabText = this.mainText;
-        this.fonemaText = convertText(this.mainText, arab_to_fonema);
+        this.fonemaText = convertArabToTurk(this.mainText, arab_to_fonema);
+        this.urxunText = convertArabToTurk(this.mainText, arab_to_urxun);
 
+
+      } else if (this.selectedLanguage === 'fonema') {
+        this.krilText = convertText(this.mainText, fonema_to_kril);
+        this.urtaBitikText = convertText(this.mainText, fonema_to_turk);
+        this.arabText = convertText(this.mainText, fonema_to_arab);
+        this.fonemaText = this.mainText
+        this.urxunText = convertText(this.mainText, fonema_to_urxun);
+
+
+      } else if (this.selectedLanguage === 'urxun') {
+        this.krilText = convertText(this.mainText, urxun_to_kril);
+        this.urtaBitikText = convertText(this.mainText, urxun_to_turk);
+        this.arabText = convertText(this.mainText, urxun_to_arab);
+        this.fonemaText = convertText(this.mainText, urxun_to_fonema);
+        this.urxunText = this.mainText
       }
     },
   },
 };
 </script>
-
-<!--<script>-->
-
-<!--export default {-->
-<!--  data() {-->
-<!--    return {-->
-<!--      mainText: '',-->
-<!--      krilText: '',-->
-<!--      urtaBitikText: '',-->
-<!--      arabText: '',-->
-<!--    };-->
-<!--  },-->
-<!--  methods: {-->
-
-<!--    translateText() {-->
-<!--      function convertText(text, conversionMap) {-->
-<!--        let result = '';-->
-<!--        for (let char of text) {-->
-<!--          result += conversionMap[char] || char; // Harfni almashtiramiz, agar topilmasa asl harfni qo'yamiz-->
-<!--        }-->
-<!--        return result;-->
-<!--      }-->
-
-<!--      // Example translation logic-->
-<!--      this.krilText = convertText(this.mainText, turk_to_kiril);-->
-<!--      this.urtaBitikText = convertText(this.mainText,);-->
-<!--      this.arabText = convertText(this.mainText, turk_to_kiril);-->
-<!--    }-->
-<!--  }-->
-<!--};-->
-<!--</script>-->
 
 
